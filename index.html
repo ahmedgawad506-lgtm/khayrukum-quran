@@ -2,138 +2,162 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>خيركم للقرآن</title>
-  <meta name="description" content="خيركم للقرآن، رفيقك المجاني لحفظ كتاب الله ومتابعة وردك اليومي.">
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Tahoma, Arial, sans-serif;
-      background: #f7f5ef;
-      color: #243b30;
-      text-align: center;
-    }
-    header {
-      background: #24553f;
-      color: white;
-      padding: 30px 15px;
-    }
-    header h1 { margin: 0 0 10px; font-size: 32px; }
-    header p { margin: 0; line-height: 1.8; }
-    main { max-width: 650px; margin: 25px auto; padding: 0 16px; }
-    .card {
-      background: white;
-      padding: 24px;
-      margin-bottom: 18px;
-      border-radius: 16px;
-      box-shadow: 0 4px 14px #0000000d;
-    }
-    h2 { color: #24553f; }
-    input, select, button {
-      width: 100%;
-      padding: 13px;
-      margin: 8px 0;
-      border-radius: 9px;
-      font-size: 16px;
-    }
-    input, select { border: 1px solid #ccc; background: white; }
-    button {
-      background: #24553f;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover { background: #347354; }
-    .progress {
-      background: #e5e8e2;
-      height: 12px;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    #bar { height: 100%; width: 0%; background: #8caa70; }
-    footer { padding: 22px; color: #647268; font-size: 14px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>خيركم للقرآن | Khayrukum Quran</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f6f4ed;color:#243b30;font-family:Tahoma,Arial,sans-serif}
+header{background:#24553f;color:white;text-align:center;padding:25px 12px}
+header h1{margin:0 0 8px}
+header p{margin:5px}
+main{max-width:900px;margin:20px auto;padding:0 12px}
+.card{background:white;border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 3px 12px #0000000b}
+h2{color:#24553f}
+select,button{font:inherit;padding:12px;border-radius:9px;width:100%;margin:6px 0}
+select{border:1px solid #ccc;background:white}
+button{background:#24553f;color:white;border:0;cursor:pointer}
+button:disabled{opacity:.5}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ayah{font-family:"Traditional Arabic",Tahoma,serif;font-size:25px;line-height:2.1;padding:14px 4px;border-bottom:1px solid #e5e5dc}
+.number{display:inline-flex;align-items:center;justify-content:center;border:1px solid #8caa70;border-radius:50%;width:32px;height:32px;font-size:15px;margin-left:8px;color:#24553f}
+.small{font-size:14px;color:#65756a}
+#status{line-height:1.8}
+</style>
 </head>
 <body>
-  <header>
-    <h1>خيركم للقرآن</h1>
-    <p>Khayrukum Quran</p>
-    <p>خيركم من تعلّم القرآن وعلّمه</p>
-  </header>
+<header>
+<h1>خيركم للقرآن</h1>
+<p>Khayrukum Quran</p>
+<p>رحلتك مع كتاب الله — قراءة وحفظ ومراجعة</p>
+</header>
 
-  <main>
-    <section class="card">
-      <h2>🌿 رحلتك مع حفظ القرآن</h2>
-      <p>ابدأ اليوم ولو بآية، واجعل لك وردًا ثابتًا من كتاب الله.</p>
-    </section>
+<main>
+<section class="card">
+<h2>📖 فهرس سور القرآن الكريم</h2>
+<label for="surah">اختر السورة:</label>
+<select id="surah">
+<option value="">جارٍ تحميل السور...</option>
+</select>
+<p id="status" class="small">يتم تجهيز القرآن الكريم، يرجى الانتظار.</p>
+</section>
 
-    <section class="card">
-      <h2>📖 تسجيل ورد الحفظ</h2>
-      <label for="surah">اسم السورة</label>
-      <input id="surah" placeholder="مثال: سورة البقرة">
-      <label for="amount">مقدار الحفظ اليوم</label>
-      <select id="amount">
-        <option value="1">آية واحدة</option>
-        <option value="5">5 آيات</option>
-        <option value="10">10 آيات</option>
-        <option value="15">15 آية</option>
-        <option value="20">20 آية</option>
-      </select>
-      <button onclick="saveProgress()">حفظ ورد اليوم</button>
-      <p id="message">لم تسجل ورد اليوم بعد.</p>
-    </section>
+<section class="card">
+<div class="nav">
+<button id="previous" disabled>السورة السابقة ←</button>
+<button id="next" disabled>السورة التالية →</button>
+</div>
+<h2 id="title">أهلًا بك في خيركم للقرآن</h2>
+<p id="info" class="small"></p>
+<div id="verses"></div>
+<div class="nav">
+<button id="previousBottom" disabled>السورة السابقة</button>
+<button id="nextBottom" disabled>السورة التالية</button>
+</div>
+</section>
 
-    <section class="card">
-      <h2>🎯 هدفك اليومي</h2>
-      <p>تقدمك في تحقيق هدف حفظ 10 آيات يوميًا</p>
-      <div class="progress"><div id="bar"></div></div>
-      <p id="counter">0 من 10 آيات</p>
-      <button onclick="resetProgress()">بدء يوم جديد</button>
-    </section>
-  </main>
+<footer class="card small">
+خيركم للقرآن — اللهم اجعل القرآن ربيع قلوبنا.
+<br>يعتمد عرض النص على خدمة بيانات خارجية، لذلك يلزم الاتصال بالإنترنت.
+</footer>
+</main>
 
-  <footer>
-    خيركم للقرآن — نسأل الله أن يجعل القرآن ربيع قلوبنا.
-  </footer>
+<script>
+const api = "https://api.alquran.cloud/v1";
+const selector = document.getElementById("surah");
+const statusText = document.getElementById("status");
+const title = document.getElementById("title");
+const info = document.getElementById("info");
+const verses = document.getElementById("verses");
+const prevButtons = [
+ document.getElementById("previous"),
+ document.getElementById("previousBottom")
+];
+const nextButtons = [
+ document.getElementById("next"),
+ document.getElementById("nextBottom")
+];
+let surahs = [];
 
-  <script>
-    let saved = Number(localStorage.getItem("khayrukumVerses") || 0);
+async function loadSurahs(){
+ try{
+  const response = await fetch(api + "/surah");
+  if(!response.ok) throw new Error("تعذر الاتصال");
+  const result = await response.json();
+  surahs = result.data;
+  selector.innerHTML = "";
+  surahs.forEach(s=>{
+   const option = document.createElement("option");
+   option.value = s.number;
+   option.textContent = s.number + ". " + s.name +
+    " — " + s.englishName;
+   selector.appendChild(option);
+  });
+  const last = localStorage.getItem("khayrukumLastSurah") || "1";
+  selector.value = last;
+  await loadSurah(Number(selector.value));
+ }catch(error){
+  statusText.textContent =
+   "لم نستطع تحميل السور. تأكد من اتصال الإنترنت ثم حدّث الصفحة.";
+ }
+}
 
-    function updateProgress() {
-      document.getElementById("bar").style.width =
-        Math.min(saved / 10 * 100, 100) + "%";
-      document.getElementById("counter").textContent =
-        saved + " من 10 آيات";
-    }
+async function loadSurah(number){
+ if(number < 1 || number > 114) return;
+ statusText.textContent = "جارٍ تحميل الآيات...";
+ verses.innerHTML = "";
+ title.textContent = "جارٍ تحميل السورة...";
+ info.textContent = "";
+ [...prevButtons,...nextButtons].forEach(b=>b.disabled=true);
 
-    function saveProgress() {
-      const surah = document.getElementById("surah").value.trim();
-      const amount = Number(document.getElementById("amount").value);
+ try{
+  const response = await fetch(api + "/surah/" + number);
+  if(!response.ok) throw new Error("تعذر تحميل السورة");
+  const result = await response.json();
+  const surah = result.data;
 
-      if (!surah) {
-        document.getElementById("message").textContent =
-          "من فضلك اكتب اسم السورة أولًا.";
-        return;
-      }
+  title.textContent = surah.name;
+  info.textContent = "السورة رقم " + surah.number +
+   " • عدد الآيات: " + surah.numberOfAyahs +
+   " • " + (surah.revelationType === "Meccan" ? "مكية" : "مدنية");
 
-      saved += amount;
-      localStorage.setItem("khayrukumVerses", saved);
-      document.getElementById("message").textContent =
-        "تم تسجيل " + amount + " آيات من " + surah + "، بارك الله فيك.";
-      updateProgress();
-    }
+  surah.ayahs.forEach(ayah=>{
+   const row = document.createElement("div");
+   row.className = "ayah";
 
-    function resetProgress() {
-      saved = 0;
-      localStorage.setItem("khayrukumVerses", saved);
-      document.getElementById("message").textContent =
-        "بدأ يوم جديد، وفقك الله لحفظ كتابه.";
-      updateProgress();
-    }
+   const numberLabel = document.createElement("span");
+   numberLabel.className = "number";
+   numberLabel.textContent = ayah.numberInSurah;
 
-    updateProgress();
-  </script>
+   row.appendChild(numberLabel);
+   row.appendChild(document.createTextNode(ayah.text));
+   verses.appendChild(row);
+  });
+
+  selector.value = String(number);
+  localStorage.setItem("khayrukumLastSurah", String(number));
+  statusText.textContent = "تم تحميل السورة بنجاح.";
+  prevButtons.forEach(b=>b.disabled = number === 1);
+  nextButtons.forEach(b=>b.disabled = number === 114);
+ }catch(error){
+  title.textContent = "تعذر تحميل السورة";
+  statusText.textContent =
+   "تأكد من الإنترنت ثم اختر السورة مرة أخرى.";
+ }
+}
+
+selector.addEventListener("change",()=>{
+ loadSurah(Number(selector.value));
+});
+prevButtons.forEach(b=>b.addEventListener("click",()=>{
+ loadSurah(Number(selector.value)-1);
+}));
+nextButtons.forEach(b=>b.addEventListener("click",()=>{
+ loadSurah(Number(selector.value)+1);
+}));
+
+loadSurahs();
+</script>
 </body>
 </html>
+
