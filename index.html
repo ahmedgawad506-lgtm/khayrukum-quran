@@ -4,51 +4,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>خيركم للقرآن | Khayrukum Quran</title>
+<title>خيركم للقرآن</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f6f4ed;color:#243b30;font-family:Tahoma,Arial,sans-serif}
-header{background:#24553f;color:white;text-align:center;padding:25px 12px}
+header{background:#24553f;color:white;text-align:center;padding:24px 12px}
 header h1{margin:0 0 8px}
-header p{margin:5px}
 main{max-width:900px;margin:20px auto;padding:0 12px}
-.card{background:white;border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 3px 12px #0000000b}
+.card{background:white;border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 3px 12px #0000000b}
 h2{color:#24553f}
-select,button{font:inherit;padding:12px;border-radius:9px;width:100%;margin:6px 0}
-select{border:1px solid #ccc;background:white}
+select,button{font:inherit;padding:11px;border-radius:9px;margin:5px 0}
+select{width:100%;border:1px solid #ccc;background:white}
 button{background:#24553f;color:white;border:0;cursor:pointer}
-button:disabled{opacity:.5}
-.nav{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.ayah{font-family:"Traditional Arabic",Tahoma,serif;font-size:25px;line-height:2.1;padding:14px 4px;border-bottom:1px solid #e5e5dc}
-.number{display:inline-flex;align-items:center;justify-content:center;border:1px solid #8caa70;border-radius:50%;width:32px;height:32px;font-size:15px;margin-left:8px;color:#24553f}
-.small{font-size:14px;color:#65756a}
-#status{line-height:1.8}
+button:disabled{opacity:.4;cursor:not-allowed}
+.full{width:100%}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.small{font-size:13px;color:#68766c;line-height:1.8}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:#f1f4ed;padding:12px;border-radius:10px;text-align:center}
+.stat strong{display:block;font-size:22px;color:#24553f}
+.progress{height:10px;background:#e5e8e2;border-radius:10px;overflow:hidden;margin:12px 0}
+#bar{height:100%;width:0;background:#8caa70;transition:width .2s}
+.ayah{padding:14px 3px;border-bottom:1px solid #e5e5dc}
+.ayah-text{font-family:"Traditional Arabic",Tahoma,serif;font-size:25px;line-height:2.1}
+.number{display:inline-flex;align-items:center;justify-content:center;border:1px solid #8caa70;border-radius:50%;width:32px;height:32px;font-size:14px;margin-left:8px;color:#24553f;flex-shrink:0}
+.ayah-tools{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:8px}
+.save-btn{font-size:13px;padding:8px 12px}
+.saved{background:#e5f2e5;color:#24553f;border:1px solid #8caa70}
+.hidden{display:none}
+footer{text-align:center}
 </style>
 </head>
 <body>
 <header>
 <h1>خيركم للقرآن</h1>
 <p>Khayrukum Quran</p>
-<p>رحلتك مع كتاب الله — قراءة وحفظ ومراجعة</p>
+<p>رفيقك في الحفظ والمراجعة</p>
 </header>
 
 <main>
 <section class="card">
-<h2>📖 فهرس سور القرآن الكريم</h2>
-<label for="surah">اختر السورة:</label>
-<select id="surah">
-<option value="">جارٍ تحميل السور...</option>
-</select>
-<p id="status" class="small">يتم تجهيز القرآن الكريم، يرجى الانتظار.</p>
+<h2>📊 تقدمك في الحفظ</h2>
+<div class="stats">
+<div class="stat"><strong id="savedCount">0</strong>آية محفوظة</div>
+<div class="stat"><strong id="percent">0%</strong>من القرآن</div>
+</div>
+<div class="progress"><div id="bar"></div></div>
+<p class="small" id="progressInfo">ابدأ بتحديد الآيات التي حفظتها.</p>
+<button class="full" id="backup">تصدير نسخة احتياطية لتقدم الحفظ</button>
+<input id="restoreFile" type="file" accept=".json,application/json" hidden>
+<button class="full" id="restore">استعادة نسخة احتياطية</button>
+<p class="small">تقدمك محفوظ في هذا المتصفح. احتفظ بنسخة احتياطية لحمايته.</p>
 </section>
 
 <section class="card">
-<div class="nav">
-<button id="previous" disabled>السورة السابقة ←</button>
-<button id="next" disabled>السورة التالية →</button>
-</div>
-<h2 id="title">أهلًا بك في خيركم للقرآن</h2>
+<h2>📖 فهرس السور</h2>
+<select id="surah">
+<option value="">جارٍ تحميل السور...</option>
+</select>
+<p id="status" class="small">جارٍ الاتصال بمصدر القرآن الكريم...</p>
+</section>
+
+<section class="card">
+<h2 id="title">القرآن الكريم</h2>
 <p id="info" class="small"></p>
+<div class="nav">
+<button id="previous" disabled>السورة السابقة</button>
+<button id="next" disabled>السورة التالية</button>
+</div>
+<p class="small">يمكنك تحديد الآية كمحفوظة أو إلغاء تحديدها. استخدم زر عرض المحفوظ للمراجعة.</p>
+<button id="filter" class="full">عرض جميع الآيات</button>
 <div id="verses"></div>
 <div class="nav">
 <button id="previousBottom" disabled>السورة السابقة</button>
@@ -58,104 +83,280 @@ button:disabled{opacity:.5}
 
 <footer class="card small">
 خيركم للقرآن — اللهم اجعل القرآن ربيع قلوبنا.
-<br>يعتمد عرض النص على خدمة بيانات خارجية، لذلك يلزم الاتصال بالإنترنت.
+<br>النص القرآني يُحمّل من خدمة خارجية عبر الإنترنت.
 </footer>
 </main>
 
 <script>
-const api = "https://api.alquran.cloud/v1";
-const selector = document.getElementById("surah");
-const statusText = document.getElementById("status");
-const title = document.getElementById("title");
-const info = document.getElementById("info");
-const verses = document.getElementById("verses");
-const prevButtons = [
- document.getElementById("previous"),
- document.getElementById("previousBottom")
-];
-const nextButtons = [
- document.getElementById("next"),
- document.getElementById("nextBottom")
-];
+const API = "https://api.alquran.cloud/v1";
+const TOTAL_AYAHS = 6236;
+const SAVE_KEY = "khayrukumMemorizedV1";
+const LAST_KEY = "khayrukumLastPositionV1";
+
+const $ = id => document.getElementById(id);
+const selector = $("surah");
+const versesBox = $("verses");
+
 let surahs = [];
+let memorized = loadSaved();
+let showSavedOnly = false;
+let currentSurah = 1;
+let currentAyahs = [];
+
+function loadSaved(){
+  try{
+    const data = JSON.parse(localStorage.getItem(SAVE_KEY) || "[]");
+    if(!Array.isArray(data)) return [];
+    return [...new Set(data.filter(n =>
+      Number.isInteger(n) && n >= 1 && n <= TOTAL_AYAHS
+    ))];
+  }catch(e){return [];}
+}
+
+function persist(){
+  try{
+    localStorage.setItem(SAVE_KEY, JSON.stringify(memorized));
+    updateStats();
+    return true;
+  }catch(e){
+    alert("تعذر حفظ البيانات. صدّر نسخة احتياطية وتحقق من مساحة المتصفح.");
+    return false;
+  }
+}
+
+function updateStats(){
+  const count = memorized.length;
+  const pct = (count / TOTAL_AYAHS * 100).toFixed(2);
+  $("savedCount").textContent = count.toLocaleString("ar-EG");
+  $("percent").textContent = pct + "%";
+  $("bar").style.width = pct + "%";
+  $("progressInfo").textContent =
+    "حفظت " + count.toLocaleString("ar-EG") +
+    " من أصل " + TOTAL_AYAHS.toLocaleString("ar-EG") + " آية.";
+}
+
+function setLastPosition(surah, ayah){
+  try{
+    localStorage.setItem(LAST_KEY, JSON.stringify({surah, ayah}));
+  }catch(e){}
+}
 
 async function loadSurahs(){
- try{
-  const response = await fetch(api + "/surah");
-  if(!response.ok) throw new Error("تعذر الاتصال");
-  const result = await response.json();
-  surahs = result.data;
-  selector.innerHTML = "";
-  surahs.forEach(s=>{
-   const option = document.createElement("option");
-   option.value = s.number;
-   option.textContent = s.number + ". " + s.name +
-    " — " + s.englishName;
-   selector.appendChild(option);
-  });
-  const last = localStorage.getItem("khayrukumLastSurah") || "1";
-  selector.value = last;
-  await loadSurah(Number(selector.value));
- }catch(error){
-  statusText.textContent =
-   "لم نستطع تحميل السور. تأكد من اتصال الإنترنت ثم حدّث الصفحة.";
- }
+  try{
+    const response = await fetch(API + "/surah");
+    if(!response.ok) throw new Error();
+    const result = await response.json();
+    surahs = result.data;
+
+    selector.innerHTML = "";
+    surahs.forEach(s=>{
+      const option = document.createElement("option");
+      option.value = s.number;
+      option.textContent = s.number + ". " + s.name;
+      selector.appendChild(option);
+    });
+
+    let startSurah = 1;
+    let startAyah = 1;
+    try{
+      const last = JSON.parse(localStorage.getItem(LAST_KEY) || "null");
+      if(last && Number.isInteger(last.surah) &&
+         last.surah >= 1 && last.surah <= 114){
+        startSurah = last.surah;
+        startAyah = Number.isInteger(last.ayah) && last.ayah > 0
+          ? last.ayah : 1;
+      }
+    }catch(e){}
+
+    await loadSurah(startSurah, startAyah);
+  }catch(e){
+    $("status").textContent =
+      "تعذر تحميل السور. تأكد من الإنترنت ثم حدّث الصفحة.";
+  }
 }
 
-async function loadSurah(number){
- if(number < 1 || number > 114) return;
- statusText.textContent = "جارٍ تحميل الآيات...";
- verses.innerHTML = "";
- title.textContent = "جارٍ تحميل السورة...";
- info.textContent = "";
- [...prevButtons,...nextButtons].forEach(b=>b.disabled=true);
+async function loadSurah(number, targetAyah = 1){
+  if(number < 1 || number > 114) return;
 
- try{
-  const response = await fetch(api + "/surah/" + number);
-  if(!response.ok) throw new Error("تعذر تحميل السورة");
-  const result = await response.json();
-  const surah = result.data;
+  currentSurah = number;
+  $("status").textContent = "جارٍ تحميل الآيات...";
+  $("title").textContent = "جارٍ التحميل...";
+  $("info").textContent = "";
+  versesBox.innerHTML = "";
+  [...$("previous").parentElement.children].forEach(b=>b.disabled=true);
+  $("previousBottom").disabled = true;
+  $("nextBottom").disabled = true;
+  $("previous").disabled = true;
+  $("next").disabled = true;
 
-  title.textContent = surah.name;
-  info.textContent = "السورة رقم " + surah.number +
-   " • عدد الآيات: " + surah.numberOfAyahs +
-   " • " + (surah.revelationType === "Meccan" ? "مكية" : "مدنية");
+  try{
+    const response = await fetch(API + "/surah/" + number);
+    if(!response.ok) throw new Error();
+    const result = await response.json();
+    const surah = result.data;
+    currentAyahs = surah.ayahs;
 
-  surah.ayahs.forEach(ayah=>{
-   const row = document.createElement("div");
-   row.className = "ayah";
+    $("title").textContent = surah.name;
+    $("info").textContent =
+      "السورة " + surah.number + " • عدد الآيات: " +
+      surah.numberOfAyahs + " • " +
+      (surah.revelationType === "Meccan" ? "مكية" : "مدنية");
 
-   const numberLabel = document.createElement("span");
-   numberLabel.className = "number";
-   numberLabel.textContent = ayah.numberInSurah;
+    selector.value = String(number);
+    setLastPosition(number, targetAyah);
 
-   row.appendChild(numberLabel);
-   row.appendChild(document.createTextNode(ayah.text));
-   verses.appendChild(row);
-  });
+    $("previous").disabled = number === 1;
+    $("previousBottom").disabled = number === 1;
+    $("next").disabled = number === 114;
+    $("nextBottom").disabled = number === 114;
 
-  selector.value = String(number);
-  localStorage.setItem("khayrukumLastSurah", String(number));
-  statusText.textContent = "تم تحميل السورة بنجاح.";
-  prevButtons.forEach(b=>b.disabled = number === 1);
-  nextButtons.forEach(b=>b.disabled = number === 114);
- }catch(error){
-  title.textContent = "تعذر تحميل السورة";
-  statusText.textContent =
-   "تأكد من الإنترنت ثم اختر السورة مرة أخرى.";
- }
+    renderAyahs();
+
+    $("status").textContent = "تم تحميل السورة بنجاح.";
+    const target = document.getElementById("ayah-" + targetAyah);
+    if(target) target.scrollIntoView({block:"center", behavior:"smooth"});
+  }catch(e){
+    $("title").textContent = "تعذر تحميل السورة";
+    $("status").textContent =
+      "تحقق من اتصال الإنترنت ثم حاول اختيار السورة مرة أخرى.";
+  }
 }
 
-selector.addEventListener("change",()=>{
- loadSurah(Number(selector.value));
+function renderAyahs(){
+  versesBox.innerHTML = "";
+  let shown = 0;
+
+  currentAyahs.forEach(ayah=>{
+    const isSaved = memorized.includes(ayah.number);
+    if(showSavedOnly && !isSaved) return;
+    shown++;
+
+    const row = document.createElement("div");
+    row.className = "ayah";
+    row.id = "ayah-" + ayah.number;
+
+    const text = document.createElement("div");
+    text.className = "ayah-text";
+
+    const num = document.createElement("span");
+    num.className = "number";
+    num.textContent = ayah.numberInSurah;
+    text.appendChild(num);
+    text.appendChild(document.createTextNode(ayah.text));
+
+    const tools = document.createElement("div");
+    tools.className = "ayah-tools";
+
+    const label = document.createElement("span");
+    label.className = "small";
+    label.textContent = isSaved ? "✓ تم الحفظ" : "لم تُحدد كمحفوظة";
+
+    const btn = document.createElement("button");
+    btn.className = "save-btn" + (isSaved ? " saved" : "");
+    btn.textContent = isSaved ? "إلغاء الحفظ" : "تم الحفظ";
+    btn.setAttribute("aria-pressed", String(isSaved));
+
+    btn.addEventListener("click", ()=>{
+      const wasSaved = memorized.includes(ayah.number);
+      const old = memorized.slice();
+
+      memorized = wasSaved
+        ? memorized.filter(n => n !== ayah.number)
+        : [...memorized, ayah.number];
+
+      if(!persist()){
+        memorized = old;
+        return;
+      }
+
+      setLastPosition(currentSurah, ayah.numberInSurah);
+      renderAyahs();
+    });
+
+    tools.appendChild(label);
+    tools.appendChild(btn);
+    row.appendChild(text);
+    row.appendChild(tools);
+    versesBox.appendChild(row);
+  });
+
+  if(shown === 0){
+    const msg = document.createElement("p");
+    msg.className = "small";
+    msg.textContent = "لا توجد آيات محفوظة في هذه السورة حتى الآن.";
+    versesBox.appendChild(msg);
+  }
+}
+
+function toggleFilter(){
+  showSavedOnly = !showSavedOnly;
+  $("filter").textContent = showSavedOnly
+    ? "عرض جميع الآيات" : "عرض الآيات المحفوظة فقط";
+  renderAyahs();
+}
+
+$("filter").addEventListener("click", toggleFilter);
+selector.addEventListener("change", ()=>loadSurah(Number(selector.value)));
+$("previous").addEventListener("click", ()=>loadSurah(currentSurah-1));
+$("previousBottom").addEventListener("click", ()=>loadSurah(currentSurah-1));
+$("next").addEventListener("click", ()=>loadSurah(currentSurah+1));
+$("nextBottom").addEventListener("click", ()=>loadSurah(currentSurah+1));
+
+$("backup").addEventListener("click", ()=>{
+  const data = {
+    app: "Khayrukum Quran",
+    version: 1,
+    memorized,
+    lastPosition: JSON.parse(localStorage.getItem(LAST_KEY) || "null")
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)],
+    {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "khayrukum-backup.json";
+  a.click();
+  URL.revokeObjectURL(url);
 });
-prevButtons.forEach(b=>b.addEventListener("click",()=>{
- loadSurah(Number(selector.value)-1);
-}));
-nextButtons.forEach(b=>b.addEventListener("click",()=>{
- loadSurah(Number(selector.value)+1);
-}));
 
+$("restore").addEventListener("click", ()=> $("restoreFile").click());
+
+$("restoreFile").addEventListener("change", async event=>{
+  const file = event.target.files[0];
+  if(!file) return;
+
+  try{
+    const data = JSON.parse(await file.text());
+    if(!data || data.app !== "Khayrukum Quran" ||
+       !Array.isArray(data.memorized)){
+      throw new Error();
+    }
+
+    const valid = data.memorized.filter(n =>
+      Number.isInteger(n) && n >= 1 && n <= TOTAL_AYAHS
+    );
+
+    if(!confirm("هل تريد استعادة النسخة؟ سيتم استبدال قائمة الآيات المحفوظة الحالية.")){
+      event.target.value = "";
+      return;
+    }
+
+    memorized = [...new Set(valid)];
+    if(!persist()) throw new Error();
+
+    if(data.lastPosition){
+      localStorage.setItem(LAST_KEY, JSON.stringify(data.lastPosition));
+    }
+
+    renderAyahs();
+    alert("تمت استعادة بيانات الحفظ.");
+  }catch(e){
+    alert("الملف غير صالح أو لا يتوافق مع نسخة خيركم للقرآن.");
+  }
+  event.target.value = "";
+});
+
+updateStats();
 loadSurahs();
 </script>
 </body>
