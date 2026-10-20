@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>خيركم للقرآن</title>
+  <meta name="description" content="خيركم للقرآن، رفيقك المجاني لحفظ كتاب الله ومتابعة وردك اليومي.">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Tahoma, Arial, sans-serif;
+      background: #f7f5ef;
+      color: #243b30;
+      text-align: center;
+    }
+    header {
+      background: #24553f;
+      color: white;
+      padding: 30px 15px;
+    }
+    header h1 { margin: 0 0 10px; font-size: 32px; }
+    header p { margin: 0; line-height: 1.8; }
+    main { max-width: 650px; margin: 25px auto; padding: 0 16px; }
+    .card {
+      background: white;
+      padding: 24px;
+      margin-bottom: 18px;
+      border-radius: 16px;
+      box-shadow: 0 4px 14px #0000000d;
+    }
+    h2 { color: #24553f; }
+    input, select, button {
+      width: 100%;
+      padding: 13px;
+      margin: 8px 0;
+      border-radius: 9px;
+      font-size: 16px;
+    }
+    input, select { border: 1px solid #ccc; background: white; }
+    button {
+      background: #24553f;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover { background: #347354; }
+    .progress {
+      background: #e5e8e2;
+      height: 12px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    #bar { height: 100%; width: 0%; background: #8caa70; }
+    footer { padding: 22px; color: #647268; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>خيركم للقرآن</h1>
+    <p>Khayrukum Quran</p>
+    <p>خيركم من تعلّم القرآن وعلّمه</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>🌿 رحلتك مع حفظ القرآن</h2>
+      <p>ابدأ اليوم ولو بآية، واجعل لك وردًا ثابتًا من كتاب الله.</p>
+    </section>
+
+    <section class="card">
+      <h2>📖 تسجيل ورد الحفظ</h2>
+      <label for="surah">اسم السورة</label>
+      <input id="surah" placeholder="مثال: سورة البقرة">
+      <label for="amount">مقدار الحفظ اليوم</label>
+      <select id="amount">
+        <option value="1">آية واحدة</option>
+        <option value="5">5 آيات</option>
+        <option value="10">10 آيات</option>
+        <option value="15">15 آية</option>
+        <option value="20">20 آية</option>
+      </select>
+      <button onclick="saveProgress()">حفظ ورد اليوم</button>
+      <p id="message">لم تسجل ورد اليوم بعد.</p>
+    </section>
+
+    <section class="card">
+      <h2>🎯 هدفك اليومي</h2>
+      <p>تقدمك في تحقيق هدف حفظ 10 آيات يوميًا</p>
+      <div class="progress"><div id="bar"></div></div>
+      <p id="counter">0 من 10 آيات</p>
+      <button onclick="resetProgress()">بدء يوم جديد</button>
+    </section>
+  </main>
+
+  <footer>
+    خيركم للقرآن — نسأل الله أن يجعل القرآن ربيع قلوبنا.
+  </footer>
+
+  <script>
+    let saved = Number(localStorage.getItem("khayrukumVerses") || 0);
+
+    function updateProgress() {
+      document.getElementById("bar").style.width =
+        Math.min(saved / 10 * 100, 100) + "%";
+      document.getElementById("counter").textContent =
+        saved + " من 10 آيات";
+    }
+
+    function saveProgress() {
+      const surah = document.getElementById("surah").value.trim();
+      const amount = Number(document.getElementById("amount").value);
+
+      if (!surah) {
+        document.getElementById("message").textContent =
+          "من فضلك اكتب اسم السورة أولًا.";
+        return;
+      }
+
+      saved += amount;
+      localStorage.setItem("khayrukumVerses", saved);
+      document.getElementById("message").textContent =
+        "تم تسجيل " + amount + " آيات من " + surah + "، بارك الله فيك.";
+      updateProgress();
+    }
+
+    function resetProgress() {
+      saved = 0;
+      localStorage.setItem("khayrukumVerses", saved);
+      document.getElementById("message").textContent =
+        "بدأ يوم جديد، وفقك الله لحفظ كتابه.";
+      updateProgress();
+    }
+
+    updateProgress();
+  </script>
+</body>
+</html>
