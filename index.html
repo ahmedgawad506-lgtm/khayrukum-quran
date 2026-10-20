@@ -57,6 +57,58 @@ footer{text-align:center}
 <p class="small">تقدمك محفوظ في هذا المتصفح. احتفظ بنسخة احتياطية لحمايته.</p>
 </section>
 
+<section class="card" id="dailyPlan">
+  <h2>🌟 خطتي اليومية للحفظ</h2>
+  <p>كل يوم خطوة جديدة نحو حفظ كتاب الله!</p>
+
+  <label for="dailySurah">اختر سورة الحفظ:</label>
+  <select id="dailySurah"></select>
+
+  <div class="nav">
+    <div>
+      <label for="startAyah">من الآية:</label>
+      <input id="startAyah" type="number" min="1" value="1"
+        style="width:100%;padding:10px">
+    </div>
+    <div>
+      <label for="endAyah">إلى الآية:</label>
+      <input id="endAyah" type="number" min="1" value="5"
+        style="width:100%;padding:10px">
+    </div>
+  </div>
+
+  <label for="dailyGoal">هدفي اليومي من الآيات:</label>
+  <select id="dailyGoal">
+    <option value="3">3 آيات</option>
+    <option value="5" selected>5 آيات</option>
+    <option value="10">10 آيات</option>
+    <option value="15">15 آية</option>
+    <option value="20">20 آية</option>
+  </select>
+
+  <button id="savePlan" class="full">حفظ خطتي اليومية</button>
+
+  <div class="progress">
+    <div id="dailyBar"
+      style="height:100%;width:0;background:#8caa70"></div>
+  </div>
+
+  <p id="dailyStatus" class="small">
+    اختر السورة والآيات لبدء خطتك.
+  </p>
+
+  <button id="openPlan" class="full">
+    الانتقال إلى آيات الحفظ
+  </button>
+</section>
+
+<section class="card" id="dailyReview">
+  <h2>🔄 مراجعتي اليومية</h2>
+  <p>راجع الآيات التي حفظتها سابقًا، وثبّت حفظك كل يوم.</p>
+  <p id="reviewStatus" class="small"></p>
+  <div id="reviewList"></div>
+</section>
+
 <section class="card">
 <h2>📖 فهرس السور</h2>
 <select id="surah">
@@ -356,11 +408,241 @@ $("restoreFile").addEventListener("change", async event=>{
   event.target.value = "";
 });
 
+
+const PLAN_KEY = "khayrukumDailyPlanV1";
+const REVIEW_KEY = "khayrukumDailyReviewV1";
+
+let dailyPlan = loadPlan();
+let reviewedToday = loadReview();
+
+function todayKey() {
+  const d = new Date();
+  return d.getFullYear() + "-" +
+    String(d.getMonth() + 1).padStart(2, "0") + "-" +
+    String(d.getDate()).padStart(2, "0");
+}
+
+function loadPlan() {
+  try {
+    return JSON.parse(localStorage.getItem(PLAN_KEY)) || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function loadReview() {
+  try {
+    const data = JSON.parse(localStorage.getItem(REVIEW_KEY));
+    if (data && data.date === todayKey()) return data.items || [];
+  } catch (e) {}
+  return [];
+}
+
+function saveReview() {
+  localStorage.setItem(REVIEW_KEY, JSON.stringify({
+    date: todayKey(),
+    items: reviewedToday
+  }));
+}
+
+function setupDailySurahs() {
+  const daily = $("dailySurah");
+  daily.innerHTML = "";
+
+  surahs.forEach(s => {
+    const option = document.createElement("option");
+    option.value = s.number;
+    option.textContent = s.number + ". " + s.name;
+    daily.appendChild(option);
+  });
+
+  if (dailyPlan) {
+    daily.value = String(dailyPlan.surah);
+    $("startAyah").value = dailyPlan.start;
+    $("endAyah").value = dailyPlan.end;
+    $("dailyGoal").value = String(dailyPlan.goal);
+  }
+
+  updatePlanStatus();
+  renderReview();
+}
+
+function updatePlanStatus() {
+  if (!dailyPlan) {
+    $("dailyStatus").textContent =
+      "اختر السورة والآيات ثم اضغط حفظ خطتي اليومية.";
+    $("dailyBar").style.width = "0%";
+    return;
+  }
+
+  const s = surahs.find(x => x.number === dailyPlan.surah);
+  if (!s) return;
+
+  const savedCount = memorized.filter(n =>
+    n >= s.ayahsStart && n <= s.ayahsEnd
+  ).length;
+
+  // نستخدم نطاق الآيات المحدد في الخطة.
+  const selected = [];
+  let globalNumber = 0;
+
+  surahs.forEach(item => {
+    for (let i = 1; i <= item.numberOfAyahs; i++) {
+      globalNumber++;
+      if (item.number === dailyPlan.surah &&
+          i >= dailyPlan.start && i <= dailyPlan.end) {
+        selected.push(globalNumber);
+      }
+    }
+  });
+
+  const done = selected.filter(n => memorized.includes(n)).length;
+  const target = Math.min(dailyPlan.goal, selected.length);
+  const percent = target ? Math.min(100, done / target * 100) : 0;
+
+  $("dailyBar").style.width = percent + "%";
+  $("dailyStatus").textContent =
+    "هدفك " + dailyPlan.goal + " آيات. أنجزت حفظ " +
+    done + " من " + selected.length +
+    " آيات محددة في خطتك.";
+}
+
+function renderReview() {
+  const list = $("reviewList");
+  list.innerHTML = "";
+
+  if (!currentAyahs.length) {
+    $("reviewStatus").textContent =
+      "افتح سورة لعرض الآيات المحفوظة منها.";
+    return;
+  }
+
+  const savedHere = currentAyahs.filter(a =>
+    memorized.includes(a.number)
+  );
+
+  $("reviewStatus").textContent =
+    "الآيات المحفوظة في السورة الحالية: " + savedHere.length;
+
+  if (!savedHere.length) {
+    list.textContent =
+      "لا توجد آيات محفوظة في هذه السورة بعد. ابدأ بالحفظ أولًا.";
+    return;
+  }
+
+  savedHere.forEach(a => {
+    const row = document.createElement("div");
+    row.style.padding = "10px 0";
+    row.style.borderBottom = "1px solid #e5e5dc";
+
+    const text = document.createElement("p");
+    text.textContent = "الآية " + a.numberInSurah + ": " + a.text;
+    text.style.lineHeight = "2";
+
+    const label = document.createElement("label");
+    const check = document.createElement("input");
+    check.type = "checkbox";
+    check.checked = reviewedToday.includes(a.number);
+    check.style.marginLeft = "8px";
+
+    check.addEventListener("change", () => {
+      if (check.checked) {
+        if (!reviewedToday.includes(a.number)) {
+          reviewedToday.push(a.number);
+        }
+      } else {
+        reviewedToday = reviewedToday.filter(n => n !== a.number);
+      }
+
+      saveReview();
+      renderReview();
+    });
+
+    label.appendChild(check);
+    label.appendChild(document.createTextNode("تمت المراجعة اليوم"));
+    row.appendChild(text);
+    row.appendChild(label);
+    list.appendChild(row);
+  });
+
+  const count = savedHere.filter(a =>
+    reviewedToday.includes(a.number)
+  ).length;
+
+  $("reviewStatus").textContent +=
+    " — تمت مراجعة " + count + " آيات اليوم.";
+}
+
+$("dailySurah").addEventListener("change", async () => {
+  const number = Number($("dailySurah").value);
+  const s = surahs.find(x => x.number === number);
+  if (!s) return;
+
+  $("startAyah").value = 1;
+  $("endAyah").value = Math.min(5, s.numberOfAyahs);
+});
+
+$("savePlan").addEventListener("click", () => {
+  const number = Number($("dailySurah").value);
+  const s = surahs.find(x => x.number === number);
+  const start = Number($("startAyah").value);
+  const end = Number($("endAyah").value);
+  const goal = Number($("dailyGoal").value);
+
+  if (!s || start < 1 || end < start ||
+      end > s.numberOfAyahs || !goal) {
+    alert("راجع السورة وأرقام الآيات. تأكد أن البداية والنهاية صحيحتان.");
+    return;
+  }
+
+  dailyPlan = { surah: number, start, end, goal };
+
+  try {
+    localStorage.setItem(PLAN_KEY, JSON.stringify(dailyPlan));
+  } catch (e) {
+    alert("تعذر حفظ الخطة في المتصفح.");
+    return;
+  }
+
+  updatePlanStatus();
+  alert("تم حفظ خطتك اليومية بنجاح!");
+});
+
+$("openPlan").addEventListener("click", () => {
+  if (!dailyPlan) {
+    alert("احفظ خطتك اليومية أولًا.");
+    return;
+  }
+
+  loadSurah(dailyPlan.surah, dailyPlan.start);
+});
+
+const originalRenderAyahs = renderAyahs;
+renderAyahs = function() {
+  originalRenderAyahs();
+  updatePlanStatus();
+  renderReview();
+};
+
+const originalLoadSurah = loadSurah;
+loadSurah = async function(number, targetAyah = 1) {
+  await originalLoadSurah(number, targetAyah);
+  renderReview();
+};
+
 updateStats();
-loadSurahs();
+loadSurahs().then(() => {
+  setupDailySurahs();
+});
+
 </script>
 </body>
 </html>
+
+</script>
+</body>
+</html>
+
 
 </script>
 </body>
