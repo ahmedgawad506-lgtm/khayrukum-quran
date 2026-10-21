@@ -227,45 +227,27 @@ function loadSaved(){
 function persist(){
   try{
     localStorage.setItem(SAVE_KEY, JSON.stringify(memorized));
-    
+    updateStats();
+    return true;
+  }catch(e){
+    alert("تعذر حفظ البيانات. صدّر نسخة احتياطية وتحقق من مساحة المتصفح.");
+    return false;
+  }
+}
 
-function checkTajweed
+function checkTajweed(answer) {
   const result = document.getElementById("tajweedAnswer");
-
   if (!result) {
     alert("لم يتم العثور على مكان عرض نتيجة الاختبار.");
     return;
   }
 
   if (answer === "ikhfa") {
-    result.textContent =
-      "أحسنت! الإجابة صحيحة. الشين من حروف الإخفاء.";
+    result.textContent = "أحسنت! الإجابة صحيحة. الشين من حروف الإخفاء.";
     result.style.color = "green";
   } else {
-    result.textContent =
-      "حاول مرة أخرى. الشين من حروف الإخفاء.";
+    result.textContent = "حاول مرة أخرى. تذكر أن الشين من حروف الإخفاء.";
     result.style.color = "red";
-  }
-};
-
-  const result = document.getElementById("tajweedAnswer");
-
-  if (answer === "ikhfa") {
-    result.textContent =
-      "أحسنت! الإجابة صحيحة. الشين من حروف الإخفاء.";
-    result.style.color = "green";
-  } else {
-    result.textContent =
-      "حاول مرة أخرى. تذكر أن الشين من حروف الإخفاء.";
-    result.style.color = "red";
-  }
-}
-
-    updateStats();
-    return true;
-  }catch(e){
-    alert("تعذر حفظ البيانات. صدّر نسخة احتياطية وتحقق من مساحة المتصفح.");
-    return false;
   }
 }
 
@@ -730,14 +712,4 @@ loadSurahs().then(() => {
 
 </script>
 </body>
-</html>
-
-</script>
-</body>
-</html>
-
-
-</script>
-</body>
-</html>
-
+</html>\n
