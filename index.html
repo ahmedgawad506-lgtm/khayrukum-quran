@@ -133,6 +133,65 @@ footer{text-align:center}
 </div>
 </section>
 
+<section class="card" id="tajweed">
+  <h2>📚 أكاديمية التجويد</h2>
+  <p>تعلم أحكام تلاوة القرآن الكريم خطوة بخطوة.</p>
+
+  <h3>الدرس الأول: أحكام النون الساكنة والتنوين</h3>
+  <p>
+    النون الساكنة هي نون خالية من الحركة،
+    أما التنوين فهو صوت نون ساكنة يظهر عند الوصل
+    في آخر الاسم. ولهما أربعة أحكام أساسية:
+  </p>
+
+  <div class="ayah">
+    <h3>1. الإظهار</h3>
+    <p>نطق النون الساكنة أو التنوين بوضوح عند حروف الحلق الستة:
+    ء، هـ، ع، ح، غ، خ.</p>
+    <p class="ayah-text">مِنْ هَادٍ</p>
+  </div>
+
+  <div class="ayah">
+    <h3>2. الإدغام</h3>
+    <p>إدخال النون الساكنة أو التنوين في الحرف التالي
+    عند تحقق شروط الحكم. حروفه: ي، ر، م، ل، و، ن.</p>
+    <p class="ayah-text">مِنْ رَبِّهِمْ</p>
+    <p class="small">الإدغام مع الراء هنا بغير غنة.</p>
+  </div>
+
+  <div class="ayah">
+    <h3>3. الإقلاب</h3>
+    <p>قلب صوت النون الساكنة أو التنوين إلى ميم مخفاة
+    مع الغنة عند مجيء الباء بعدها.</p>
+    <p class="ayah-text">سَمِيعٌ بَصِيرٌ</p>
+  </div>
+
+  <div class="ayah">
+    <h3>4. الإخفاء الحقيقي</h3>
+    <p>النطق بالنون الساكنة أو التنوين بين الإظهار والإدغام
+    مع الغنة عند حروف الإخفاء الخمسة عشر.</p>
+    <p class="ayah-text">مِنْ شَرِّ</p>
+  </div>
+
+  <hr>
+
+  <h3>📝 اختبر فهمك</h3>
+  <p>ما حكم النون الساكنة في «مِنْ شَرِّ»؟</p>
+
+  <div id="tajweedQuiz">
+    <button type="button" onclick="checkTajweed('izhar')">
+      الإظهار
+    </button>
+    <button type="button" onclick="checkTajweed('ikhfa')">
+      الإخفاء
+    </button>
+    <button type="button" onclick="checkTajweed('iqlab')">
+      الإقلاب
+    </button>
+    <p id="tajweedAnswer" aria-live="polite"></p>
+  </div>
+</section>
+
 <footer class="card small">
 خيركم للقرآن — اللهم اجعل القرآن ربيع قلوبنا.
 <br>النص القرآني يُحمّل من خدمة خارجية عبر الإنترنت.
@@ -168,6 +227,21 @@ function loadSaved(){
 function persist(){
   try{
     localStorage.setItem(SAVE_KEY, JSON.stringify(memorized));
+    
+function checkTajweed(answer) {
+  const result = document.getElementById("tajweedAnswer");
+
+  if (answer === "ikhfa") {
+    result.textContent =
+      "أحسنت! الإجابة صحيحة. الشين من حروف الإخفاء.";
+    result.style.color = "green";
+  } else {
+    result.textContent =
+      "حاول مرة أخرى. تذكر أن الشين من حروف الإخفاء.";
+    result.style.color = "red";
+  }
+}
+
     updateStats();
     return true;
   }catch(e){
