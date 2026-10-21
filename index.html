@@ -43,6 +43,27 @@ footer{text-align:center}
 </header>
 
 <main>
+
+<section class="card" id="learnerProfile">
+  <h2>👋 اختر المرشد المناسب لك</h2>
+  <p>اختر الفئة المناسبة للمتعلم، وسنظهر شخصية مناسبة ونوفر الأصوات العربية المتاحة على جهازك.</p>
+  <label for="learnerType">من سيتعلم القرآن؟</label>
+  <select id="learnerType">
+    <option value="child">طفل أو طفلة — شخصية كرتونية</option>
+    <option value="man">رجل بالغ — مرشد رجل</option>
+    <option value="woman">امرأة بالغة — مرشدة امرأة</option>
+  </select>
+  <div id="guideCard" style="display:flex;align-items:center;gap:14px;background:#f1f4ed;border-radius:12px;padding:14px;margin:12px 0">
+    <div id="guideAvatar" style="font-size:54px" aria-hidden="true">🧒</div>
+    <div><strong id="guideName">مرشدك الصغير</strong><p id="guideWelcome" style="margin:6px 0 0;line-height:1.8">أهلًا يا بطل! سنتعلم القرآن خطوة خطوة.</p></div>
+  </div>
+  <label for="guideVoice">الصوت العربي المتاح على جهازك:</label>
+  <select id="guideVoice"><option value="">اكتشاف الأصوات...</option></select>
+  <p class="small">تختلف الأصوات بحسب المتصفح والجهاز. إذا لم يتوفر صوت مناسب، يمكنك اختيار أي صوت عربي متاح أو متابعة الدروس دون صوت.</p>
+  <button type="button" id="previewGuide" class="full">🔊 استمع إلى المرشد</button>
+  <p id="voiceStatus" class="small" aria-live="polite"></p>
+</section>
+
 <section class="card">
 <h2>📊 تقدمك في الحفظ</h2>
 <div class="stats">
@@ -705,10 +726,97 @@ loadSurah = async function(number, targetAyah = 1) {
   renderReview();
 };
 
+
+const GUIDE_KEY = "khayrukumGuideProfileV1";
+const guideCopy = {
+  child: { avatar: "🧒", name: "مرشدك الصغير", welcome: "أهلًا يا بطل! سنتعلم القرآن خطوة خطوة وبهدوء." },
+  man: { avatar: "👨", name: "المرشد", welcome: "مرحبًا بك. لنتعلم أحكام التلاوة خطوة بخطوة." },
+  woman: { avatar: "👩", name: "المرشدة", welcome: "مرحبًا بكِ. لنتعلم أحكام التلاوة خطوة بخطوة." }
+};
+let availableGuideVoices = [];
+function updateGuideCharacter() {
+  const type = $("learnerType").value;
+  const data = guideCopy[type] || guideCopy.child;
+  $("guideAvatar").textContent = data.avatar;
+  $("guideName").textContent = data.name;
+  $("guideWelcome").textContent = data.welcome;
+  try { localStorage.setItem(GUIDE_KEY, JSON.stringify({ type, voiceURI: $("guideVoice").value })); } catch (e) {}
+}
+function loadGuideVoices() {
+  const select = $("guideVoice");
+  if (!("speechSynthesis" in window)) {
+    select.innerHTML = '<option value="">الصوت غير مدعوم في هذا المتصفح</option>';
+    $("voiceStatus").textContent = "يمكنك متابعة الدروس النصية؛ هذا المتصفح لا يدعم القراءة الصوتية.";
+    $("previewGuide").disabled = true;
+    return;
+  }
+  availableGuideVoices = window.speechSynthesis.getVoices().filter(v => /^ar([_-]|$)/i.test(v.lang));
+  const oldValue = select.value;
+  select.innerHTML = "";
+  if (!availableGuideVoices.length) {
+    select.innerHTML = '<option value="">لا يوجد صوت عربي متاح حاليًا</option>';
+    $("voiceStatus").textContent = "لم يعثر المتصفح على صوت عربي. جرّب بعد قليل أو استخدم متصفحًا يدعم أصواتًا عربية.";
+    return;
+  }
+  availableGuideVoices.forEach((voice, index) => {
+    const option = document.createElement("option");
+    option.value = voice.voiceURI;
+    option.textContent = voice.name + " — " + voice.lang;
+    select.appendChild(option);
+  });
+  let preferred = availableGuideVoices.find(v => v.voiceURI === oldValue);
+  try {
+    const saved = JSON.parse(localStorage.getItem(GUIDE_KEY) || "null");
+    if (!preferred && saved && saved.voiceURI) preferred = availableGuideVoices.find(v => v.voiceURI === saved.voiceURI);
+  } catch (e) {}
+  if (preferred) select.value = preferred.voiceURI;
+  else select.selectedIndex = 0;
+  $("voiceStatus").textContent = "اختر الصوت الذي تفضله ثم اضغط «استمع إلى المرشد». قد لا يحدد المتصفح جنس الصوت بدقة؛ لذلك يمكنك تجربة الأصوات المتاحة.";
+}
+function speakGuide() {
+  if (!("speechSynthesis" in window)) {
+    $("voiceStatus").textContent = "القراءة الصوتية غير مدعومة في هذا المتصفح.";
+    return;
+  }
+  const type = $("learnerType").value;
+  const data = guideCopy[type] || guideCopy.child;
+  const voice = availableGuideVoices.find(v => v.voiceURI === $("guideVoice").value);
+  if (!voice) {
+    $("voiceStatus").textContent = "لا يوجد صوت عربي متاح للاختيار حاليًا. يمكنك متابعة الدرس نصيًا.";
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(data.welcome);
+  utterance.lang = voice.lang || "ar";
+  utterance.voice = voice;
+  utterance.rate = type === "child" ? 0.85 : 0.92;
+  utterance.pitch = type === "child" ? 1.15 : 1;
+  utterance.onstart = () => { $("voiceStatus").textContent = "يتم تشغيل صوت المرشد…"; };
+  utterance.onend = () => { $("voiceStatus").textContent = "انتهى المثال الصوتي. يمكنك تجربة صوت آخر."; };
+  utterance.onerror = () => { $("voiceStatus").textContent = "تعذر تشغيل الصوت. جرّب اختيار صوت آخر."; };
+  window.speechSynthesis.speak(utterance);
+  try { localStorage.setItem(GUIDE_KEY, JSON.stringify({ type, voiceURI: voice.voiceURI })); } catch (e) {}
+}
+$("learnerType").addEventListener("change", updateGuideCharacter);
+$("guideVoice").addEventListener("change", updateGuideCharacter);
+$("previewGuide").addEventListener("click", speakGuide);
+try {
+  const savedGuide = JSON.parse(localStorage.getItem(GUIDE_KEY) || "null");
+  if (savedGuide && ["child", "man", "woman"].includes(savedGuide.type)) $("learnerType").value = savedGuide.type;
+} catch (e) {}
+updateGuideCharacter();
+loadGuideVoices();
+if ("speechSynthesis" in window) window.speechSynthesis.onvoiceschanged = loadGuideVoices;
+
+
 updateStats();
 loadSurahs().then(() => {
   setupDailySurahs();
 });
+
+</script>
+</body>
+</html>\n
 
 </script>
 </body>
