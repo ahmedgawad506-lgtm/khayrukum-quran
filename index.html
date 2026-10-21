@@ -228,7 +228,26 @@ function persist(){
   try{
     localStorage.setItem(SAVE_KEY, JSON.stringify(memorized));
     
-function checkTajweed(answer) {
+
+window.checkTajweed = function(answer) {
+  const result = document.getElementById("tajweedAnswer");
+
+  if (!result) {
+    alert("لم يتم العثور على مكان عرض نتيجة الاختبار.");
+    return;
+  }
+
+  if (answer === "ikhfa") {
+    result.textContent =
+      "أحسنت! الإجابة صحيحة. الشين من حروف الإخفاء.";
+    result.style.color = "green";
+  } else {
+    result.textContent =
+      "حاول مرة أخرى. الشين من حروف الإخفاء.";
+    result.style.color = "red";
+  }
+};
+
   const result = document.getElementById("tajweedAnswer");
 
   if (answer === "ikhfa") {
